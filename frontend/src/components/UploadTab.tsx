@@ -44,10 +44,8 @@ function PendingConfirmation({
   useEffect(() => {
     if (result.validation) setValidation(result.validation);
 
-    // Fetch full report details for modals
     const fetchReport = async () => {
       try {
-        // Use sessionId to fetch from pending_uploads if available
         const reportData = result.sessionId
           ? await reportService.getPendingReport(result.sessionId)
           : await reportService.getReport(result.reportId);
@@ -71,18 +69,18 @@ function PendingConfirmation({
       <div
         className={`flex items-center gap-4 p-5 rounded-xl border ${
           hasErrors
-            ? 'bg-red-500/10 border-red-500/20'
-            : 'bg-amber-500/10 border-amber-500/20'
+            ? 'bg-red-50 border-red-200'
+            : 'bg-amber-50 border-amber-200'
         }`}
       >
         {hasErrors ? (
-          <XCircle className="w-8 h-8 text-red-400 flex-shrink-0" />
+          <XCircle className="w-8 h-8 text-red-500 flex-shrink-0" />
         ) : (
-          <AlertTriangle className="w-8 h-8 text-amber-400 flex-shrink-0" />
+          <AlertTriangle className="w-8 h-8 text-amber-500 flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
-          <h3 className="text-white font-semibold">Validation Issues Found</h3>
-          <p className="text-sm text-slate-400 mt-0.5">{result.message}</p>
+          <h3 className="text-slate-900 font-semibold">Validation Issues Found</h3>
+          <p className="text-sm text-slate-500 mt-0.5">{result.message}</p>
         </div>
       </div>
 
@@ -93,14 +91,14 @@ function PendingConfirmation({
             label: hasErrors ? 'Errors' : 'Warnings',
             value: hasErrors ? validation?.errorCount : validation?.warningCount,
             icon: hasErrors ? XCircle : AlertTriangle,
-            color: hasErrors ? 'text-red-400' : 'text-amber-400',
+            color: hasErrors ? 'text-red-500' : 'text-amber-500',
             clickable: false,
           },
           {
             label: 'Columns',
             value: result.columnsCount,
             icon: FileText,
-            color: 'text-blue-400',
+            color: 'text-blue-600',
             clickable: true,
             onClick: () => setShowColumnsModal(true),
           },
@@ -108,7 +106,7 @@ function PendingConfirmation({
             label: 'Parameters',
             value: result.parametersCount,
             icon: Sparkles,
-            color: 'text-purple-400',
+            color: 'text-purple-600',
             clickable: true,
             onClick: () => setShowParametersModal(true),
           },
@@ -116,17 +114,17 @@ function PendingConfirmation({
           <div
             key={s.label}
             onClick={s.clickable ? s.onClick : undefined}
-            className={`rounded-xl bg-white/[0.03] border border-white/10 p-4 text-center transition-all ${
+            className={`rounded-xl bg-gray-50 border border-gray-200 p-4 text-center transition-all ${
               s.clickable
-                ? 'cursor-pointer hover:bg-white/[0.06] hover:border-white/20 hover:scale-105'
+                ? 'cursor-pointer hover:bg-white hover:border-gray-300 hover:shadow-sm hover:scale-105'
                 : ''
             }`}
           >
             <s.icon className={`w-5 h-5 ${s.color} mx-auto mb-2`} />
-            <p className="text-2xl font-bold text-white">{s.value}</p>
-            <p className="text-xs text-slate-400 mt-1">{s.label}</p>
+            <p className="text-2xl font-bold text-slate-900">{s.value}</p>
+            <p className="text-xs text-slate-500 mt-1">{s.label}</p>
             {s.clickable && (
-              <p className="text-xs text-blue-400 mt-1 opacity-0 group-hover:opacity-100">
+              <p className="text-xs text-blue-600 mt-1 opacity-0 group-hover:opacity-100">
                 Click to view
               </p>
             )}
@@ -145,12 +143,12 @@ function PendingConfirmation({
       )}
 
       {/* Confirmation message */}
-      <div className="p-5 rounded-xl bg-blue-500/5 border border-blue-500/20">
+      <div className="p-5 rounded-xl bg-blue-50 border border-blue-100">
         <div className="flex gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+          <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
           <div>
-            <h4 className="text-white font-medium mb-1">Review Required</h4>
-            <p className="text-sm text-slate-400">
+            <h4 className="text-slate-900 font-medium mb-1">Review Required</h4>
+            <p className="text-sm text-slate-500">
               {hasErrors
                 ? 'Critical errors were found. Please review the issues above. You can fix them using Quick Fix or choose to save anyway.'
                 : 'Warnings were found. Please review the suggestions above. You can address them or continue with saving.'}
@@ -181,7 +179,7 @@ function PendingConfirmation({
         <button
           onClick={onCancel}
           disabled={isConfirming}
-          className="px-5 py-3 bg-white/5 text-white rounded-xl font-medium border border-white/10 hover:bg-white/10 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-5 py-3 bg-white text-slate-700 rounded-xl font-medium border border-gray-200 hover:bg-gray-50 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RotateCcw className="w-4 h-4" />
           Cancel
@@ -216,9 +214,7 @@ function UploadResult({
   onViewReport: (reportId: string) => void;
   onReset: () => void;
 }) {
-  // Mutable validation state — updated after Quick Fix operations
   const [validation, setValidation] = useState<ValidationResult | null>(null);
-  // Track reportId which may change if user fixes it via Quick Fix
   const [currentReportId, setCurrentReportId] = useState(result.reportId);
 
   useEffect(() => {
@@ -229,17 +225,17 @@ function UploadResult({
   return (
     <div className="space-y-6">
       {/* Success header */}
-      <div className="flex items-center gap-4 p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-        <CheckCircle2 className="w-8 h-8 text-emerald-400 flex-shrink-0" />
+      <div className="flex items-center gap-4 p-5 rounded-xl bg-emerald-50 border border-emerald-200">
+        <CheckCircle2 className="w-8 h-8 text-emerald-600 flex-shrink-0" />
         <div className="flex-1 min-w-0">
-          <h3 className="text-white font-semibold">{result.message}</h3>
-          <p className="text-sm text-slate-400 mt-0.5">
+          <h3 className="text-slate-900 font-semibold">{result.message}</h3>
+          <p className="text-sm text-slate-500 mt-0.5">
             Report{' '}
-            <span className={`font-mono ${currentReportId.startsWith('temp-') ? 'text-amber-400' : 'text-blue-400'}`}>
+            <span className={`font-mono ${currentReportId.startsWith('temp-') ? 'text-amber-600' : 'text-blue-600'}`}>
               #{currentReportId || '(pending)'}
             </span>
             {currentReportId.startsWith('temp-') && (
-              <span className="text-xs text-amber-400/70 ml-1.5">(temporary — use Fix to set a proper ID)</span>
+              <span className="text-xs text-amber-500 ml-1.5">(temporary — use Fix to set a proper ID)</span>
             )}
             {' '}saved to database
           </p>
@@ -255,16 +251,16 @@ function UploadResult({
         ].map((s) => (
           <div
             key={s.label}
-            className="rounded-xl bg-white/[0.03] border border-white/10 p-4 text-center"
+            className="rounded-xl bg-gray-50 border border-gray-200 p-4 text-center"
           >
             <s.icon className="w-5 h-5 text-slate-400 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-white">{s.value}</p>
-            <p className="text-xs text-slate-400 mt-1">{s.label}</p>
+            <p className="text-2xl font-bold text-slate-900">{s.value}</p>
+            <p className="text-xs text-slate-500 mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Validation findings with Quick Fix support */}
+      {/* Validation findings */}
       {validation && (
         <ValidationFindings
           validation={validation}
@@ -285,7 +281,7 @@ function UploadResult({
         </button>
         <button
           onClick={onReset}
-          className="px-5 py-3 bg-white/5 text-white rounded-xl font-medium border border-white/10 hover:bg-white/10 transition-all flex items-center gap-2"
+          className="px-5 py-3 bg-white text-slate-700 rounded-xl font-medium border border-gray-200 hover:bg-gray-50 transition-all flex items-center gap-2"
         >
           <RotateCcw className="w-4 h-4" />
           Upload Another
@@ -295,7 +291,7 @@ function UploadResult({
   );
 }
 
-// ─── Drag Zone States ───────────────────────────────────────
+// ─── Drag Zone ──────────────────────────────────────────────
 function DragZone({
   isUploading,
   fileName,
@@ -329,20 +325,20 @@ function DragZone({
           relative rounded-2xl border-2 border-dashed p-16 text-center transition-all
           ${isUploading ? 'cursor-wait' : 'cursor-pointer'}
           ${isDragActive
-            ? 'border-blue-500 bg-blue-500/10'
-            : 'border-white/20 bg-gradient-to-br from-white/5 to-white/[0.02] hover:border-blue-500/50 hover:bg-white/[0.03]'
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-gray-300 bg-white hover:border-blue-400 hover:bg-blue-50/30'
           }
         `}
       >
         {isUploading ? (
           <>
-            <Loader2 className="w-12 h-12 text-blue-400 animate-spin mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">Processing...</h3>
-            <p className="text-slate-400 text-sm">
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">Processing...</h3>
+            <p className="text-slate-500 text-sm">
               Parsing Excel, enhancing with AI, validating metadata
             </p>
             {fileName && (
-              <p className="mt-3 text-sm font-mono text-blue-400">{fileName}</p>
+              <p className="mt-3 text-sm font-mono text-blue-600">{fileName}</p>
             )}
           </>
         ) : (
@@ -350,9 +346,9 @@ function DragZone({
             <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
               <Upload className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-white mb-2">Drop Excel files here</h3>
-            <p className="text-slate-400 mb-6">or click to browse</p>
-            <div className="flex items-center justify-center gap-4 text-sm text-slate-500">
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">Drop Excel files here</h3>
+            <p className="text-slate-500 mb-6">or click to browse</p>
+            <div className="flex items-center justify-center gap-4 text-sm text-slate-400">
               <span>Supported: .xlsx, .xls</span>
               <span>-</span>
               <span>Max size: 10MB</span>
@@ -372,7 +368,6 @@ function GenerateExampleDialog({
   onClose: () => void;
   onGenerate: (reportName: string, reportId: string) => void;
 }) {
-  // Generate random example values each time dialog opens
   const getRandomExample = () => {
     const reportNames = [
       'Sales Metrics Report',
@@ -385,7 +380,7 @@ function GenerateExampleDialog({
       'Product Performance Report',
     ];
     const randomName = reportNames[Math.floor(Math.random() * reportNames.length)];
-    const randomId = String(Math.floor(100000 + Math.random() * 900000)); // 6 digits
+    const randomId = String(Math.floor(100000 + Math.random() * 900000));
     return { name: randomName, id: randomId };
   };
 
@@ -395,13 +390,9 @@ function GenerateExampleDialog({
   const [error, setError] = useState('');
 
   const handleReportIdChange = (value: string) => {
-    // Only allow digits
     const digitsOnly = value.replace(/\D/g, '');
-    // Limit to 6 digits
     const limited = digitsOnly.slice(0, 6);
     setReportId(limited);
-
-    // Validate
     if (limited.length > 0 && limited.length !== 6) {
       setError('Report ID must be exactly 6 digits');
     } else {
@@ -418,16 +409,16 @@ function GenerateExampleDialog({
   const isValid = reportName.trim() && reportId.length === 6;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-md w-full mx-4 p-6">
         <div className="flex items-center gap-3 mb-4">
-          <FileSpreadsheet className="w-6 h-6 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">Generate Example Excel</h3>
+          <FileSpreadsheet className="w-6 h-6 text-blue-600" />
+          <h3 className="text-lg font-semibold text-slate-900">Generate Example Excel</h3>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Report Name
             </label>
             <input
@@ -435,13 +426,13 @@ function GenerateExampleDialog({
               value={reportName}
               onChange={(e) => setReportName(e.target.value)}
               placeholder={`e.g., ${example.name}`}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Report ID <span className="text-slate-500 text-xs">(6 digits)</span>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Report ID <span className="text-slate-400 text-xs">(6 digits)</span>
             </label>
             <input
               type="text"
@@ -449,12 +440,12 @@ function GenerateExampleDialog({
               onChange={(e) => handleReportIdChange(e.target.value)}
               placeholder={`e.g., ${example.id}`}
               maxLength={6}
-              className={`w-full px-4 py-2 bg-slate-700 border rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 ${
-                error ? 'border-red-500 focus:ring-red-500' : 'border-slate-600 focus:ring-blue-500'
+              className={`w-full px-4 py-2 bg-white border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 ${
+                error ? 'border-red-400 focus:ring-red-500' : 'border-gray-200 focus:ring-blue-500 focus:border-blue-300'
               }`}
             />
             {error && (
-              <p className="mt-1 text-xs text-red-400">{error}</p>
+              <p className="mt-1 text-xs text-red-500">{error}</p>
             )}
           </div>
         </div>
@@ -470,7 +461,7 @@ function GenerateExampleDialog({
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-600 transition-all"
+            className="px-4 py-2 bg-gray-100 text-slate-700 rounded-lg font-medium hover:bg-gray-200 transition-all"
           >
             Cancel
           </button>
@@ -503,7 +494,7 @@ export default function UploadTab({ onSelectReport }: Props) {
 
   const handleGenerateExample = async (reportName: string, reportId: string) => {
     try {
-      const response = await fetch('/api/upload/generate-example', {
+      const response = await fetch('http://localhost:9000/api/upload/generate-example', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -515,7 +506,6 @@ export default function UploadTab({ onSelectReport }: Props) {
         throw new Error('Failed to generate example');
       }
 
-      // Trigger download
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -538,18 +528,18 @@ export default function UploadTab({ onSelectReport }: Props) {
       <div className="text-center mb-8">
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1" />
-          <h2 className="text-3xl font-bold text-white flex-1">Upload Reports</h2>
+          <h2 className="text-3xl font-bold text-slate-900 flex-1">Upload Reports</h2>
           <div className="flex-1 flex justify-end">
             <button
               onClick={() => setShowGenerateDialog(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-white/5 text-white rounded-lg font-medium border border-white/10 hover:bg-white/10 transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 rounded-lg font-medium border border-gray-200 hover:bg-gray-50 transition-all"
             >
               <FileSpreadsheet className="w-4 h-4" />
               Generate Example
             </button>
           </div>
         </div>
-        <p className="text-slate-400">Drop your Excel files here for AI-powered processing</p>
+        <p className="text-slate-500">Drop your Excel files here for AI-powered processing</p>
       </div>
 
       {/* Hidden file input */}
@@ -587,12 +577,12 @@ export default function UploadTab({ onSelectReport }: Props) {
 
           {/* Error */}
           {stage === 'error' && error && (
-            <div className="mt-6 flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-              <p className="text-sm text-red-400">{error}</p>
+            <div className="mt-6 flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-200">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+              <p className="text-sm text-red-600">{error}</p>
               <button
                 onClick={reset}
-                className="ml-auto text-sm text-white hover:text-blue-400 font-medium transition-colors"
+                className="ml-auto text-sm text-slate-700 hover:text-blue-600 font-medium transition-colors"
               >
                 Try Again
               </button>
@@ -601,12 +591,12 @@ export default function UploadTab({ onSelectReport }: Props) {
 
           {/* AI hint */}
           {!isUploading && !isConfirming && stage !== 'error' && (
-            <div className="mt-8 p-6 rounded-xl bg-blue-500/5 border border-blue-500/20">
+            <div className="mt-8 p-6 rounded-xl bg-blue-50 border border-blue-100">
               <div className="flex gap-4">
-                <Sparkles className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                <Sparkles className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="text-white font-medium mb-1">AI-Powered Validation</h4>
-                  <p className="text-sm text-slate-400">
+                  <h4 className="text-slate-900 font-medium mb-1">AI-Powered Validation</h4>
+                  <p className="text-sm text-slate-500">
                     Claude will automatically validate metadata, detect issues,
                     generate descriptions, and provide actionable suggestions.
                   </p>
