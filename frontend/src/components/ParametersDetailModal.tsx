@@ -8,19 +8,19 @@ interface ParametersDetailModalProps {
 
 export default function ParametersDetailModal({ parameters, onClose }: ParametersDetailModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="bg-slate-800 rounded-2xl shadow-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-purple-400" />
-            <h3 className="text-lg font-semibold text-white">
+            <Sparkles className="w-5 h-5 text-purple-600" />
+            <h3 className="text-lg font-semibold text-slate-900">
               Parameter Details ({parameters.length} parameters)
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-slate-400 hover:text-slate-700 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -30,54 +30,54 @@ export default function ParametersDetailModal({ parameters, onClose }: Parameter
         <div className="flex-1 overflow-y-auto p-6">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="sticky top-0 bg-slate-800 z-10">
-                <tr className="border-b border-white/10">
-                  <th className="text-left text-xs font-medium text-slate-400 uppercase tracking-wider pb-3 pr-4">
+              <thead className="sticky top-0 bg-white z-10">
+                <tr className="border-b border-gray-200">
+                  <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider pb-3 pr-4">
                     #
                   </th>
-                  <th className="text-left text-xs font-medium text-slate-400 uppercase tracking-wider pb-3 pr-4">
+                  <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider pb-3 pr-4">
                     Parameter Name
                   </th>
-                  <th className="text-left text-xs font-medium text-slate-400 uppercase tracking-wider pb-3 pr-4">
+                  <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider pb-3 pr-4">
                     Database Column
                   </th>
-                  <th className="text-left text-xs font-medium text-slate-400 uppercase tracking-wider pb-3 pr-4">
+                  <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider pb-3 pr-4">
                     Parameter Type
                   </th>
-                  <th className="text-left text-xs font-medium text-slate-400 uppercase tracking-wider pb-3">
+                  <th className="text-left text-xs font-medium text-slate-500 uppercase tracking-wider pb-3">
                     Default Value
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-gray-100">
                 {parameters.map((param, idx) => (
                   <tr
                     key={idx}
-                    className="hover:bg-white/[0.02] transition-colors"
+                    className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="py-3 pr-4 text-sm text-slate-500 font-mono">
                       {idx + 1}
                     </td>
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                        <span className="text-sm text-white font-medium">
+                        <Sparkles className="w-4 h-4 text-purple-500 flex-shrink-0" />
+                        <span className="text-sm text-slate-900 font-medium">
                           {param.parameterName}
                         </span>
                       </div>
                     </td>
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-2">
-                        <Database className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                        <span className="text-sm text-slate-300 font-mono">
+                        <Database className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                        <span className="text-sm text-slate-600 font-mono">
                           {param.originalColumnName}
                         </span>
                       </div>
                     </td>
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-2">
-                        <Type className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                        <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-300 font-mono">
+                        <Type className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <span className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-600 border border-blue-100 font-mono">
                           {param.parameterType}
                         </span>
                       </div>
@@ -85,13 +85,13 @@ export default function ParametersDetailModal({ parameters, onClose }: Parameter
                     <td className="py-3">
                       {param.parameterValue ? (
                         <div className="flex items-center gap-2">
-                          <FileCode className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                          <span className="text-sm text-slate-300 font-mono">
+                          <FileCode className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                          <span className="text-sm text-slate-600 font-mono">
                             {param.parameterValue}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-sm italic text-slate-600">No default value</span>
+                        <span className="text-sm italic text-slate-400">No default value</span>
                       )}
                     </td>
                   </tr>
@@ -102,10 +102,10 @@ export default function ParametersDetailModal({ parameters, onClose }: Parameter
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end px-6 py-4 border-t border-white/10">
+        <div className="flex justify-end px-6 py-4 border-t border-gray-200 bg-gray-50/50">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
           >
             Close
           </button>

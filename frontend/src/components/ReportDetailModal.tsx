@@ -19,7 +19,6 @@ interface Props {
   onClose: () => void;
 }
 
-// ─── Tabs ───────────────────────────────────────────────────
 type DetailTab = 'columns' | 'parameters' | 'meta';
 
 const tabItems: { key: DetailTab; label: string; icon: typeof FileText }[] = [
@@ -33,43 +32,40 @@ function ColumnsTable({ columns }: { columns: Column[] }) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div className="divide-y divide-white/5">
-      {/* Header */}
-      <div className="grid grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+    <div className="divide-y divide-gray-100">
+      <div className="grid grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider bg-gray-50">
         <div className="col-span-3">Column Name</div>
         <div className="col-span-3">Original Name</div>
         <div className="col-span-2">Data Type</div>
         <div className="col-span-4">Description</div>
       </div>
 
-      {/* Rows */}
       {columns.map((col) => (
         <div key={col.originalColumnName}>
           <div
             onClick={() => setExpanded(expanded === col.originalColumnName ? null : col.originalColumnName)}
-            className="grid grid-cols-12 gap-4 px-4 py-3 text-sm hover:bg-white/[0.03] transition-colors cursor-pointer items-center"
+            className="grid grid-cols-12 gap-4 px-4 py-3 text-sm hover:bg-gray-50 transition-colors cursor-pointer items-center"
           >
-            <div className="col-span-3 text-white font-medium truncate">{col.columnName}</div>
-            <div className="col-span-3 text-slate-400 font-mono text-xs truncate">{col.originalColumnName}</div>
+            <div className="col-span-3 text-slate-900 font-medium truncate">{col.columnName}</div>
+            <div className="col-span-3 text-slate-500 font-mono text-xs truncate">{col.originalColumnName}</div>
             <div className="col-span-2">
-              <span className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
+              <span className="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-100 text-blue-600 text-xs font-mono">
                 {col.dataType}
               </span>
             </div>
             <div className="col-span-4 flex items-center gap-2 min-w-0">
-              <span className="text-slate-400 truncate">{col.columnDescription || '—'}</span>
+              <span className="text-slate-500 truncate">{col.columnDescription || '—'}</span>
               {col.columnDescription && (
                 expanded === col.originalColumnName
-                  ? <ChevronUp className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                  : <ChevronDown className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                  ? <ChevronUp className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  : <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
               )}
             </div>
           </div>
 
-          {/* Expanded description */}
           {expanded === col.originalColumnName && col.columnDescription && (
             <div className="px-4 pb-3">
-              <p className="text-sm text-slate-300 bg-white/[0.03] rounded-lg p-3 border border-white/5">
+              <p className="text-sm text-slate-700 bg-gray-50 rounded-lg p-3 border border-gray-200">
                 {col.columnDescription}
               </p>
             </div>
@@ -84,28 +80,28 @@ function ColumnsTable({ columns }: { columns: Column[] }) {
 function ParametersTable({ parameters }: { parameters: Parameter[] }) {
   if (parameters.length === 0) {
     return (
-      <div className="py-12 text-center text-sm text-slate-500">No parameters defined</div>
+      <div className="py-12 text-center text-sm text-slate-400">No parameters defined</div>
     );
   }
 
   return (
-    <div className="divide-y divide-white/5">
-      <div className="grid grid-cols-4 gap-4 px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+    <div className="divide-y divide-gray-100">
+      <div className="grid grid-cols-4 gap-4 px-4 py-3 text-xs font-medium text-slate-400 uppercase tracking-wider bg-gray-50">
         <div>Parameter</div>
         <div>Original Name</div>
         <div>Type</div>
         <div>Value</div>
       </div>
       {parameters.map((p) => (
-        <div key={p.parameterName} className="grid grid-cols-4 gap-4 px-4 py-3 text-sm hover:bg-white/[0.03] transition-colors">
-          <div className="text-white font-medium">{p.parameterName}</div>
-          <div className="text-slate-400 font-mono text-xs">{p.originalColumnName}</div>
+        <div key={p.parameterName} className="grid grid-cols-4 gap-4 px-4 py-3 text-sm hover:bg-gray-50 transition-colors">
+          <div className="text-slate-900 font-medium">{p.parameterName}</div>
+          <div className="text-slate-500 font-mono text-xs">{p.originalColumnName}</div>
           <div>
-            <span className="px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono">
+            <span className="px-2 py-0.5 rounded-md bg-purple-50 border border-purple-100 text-purple-600 text-xs font-mono">
               {p.parameterType}
             </span>
           </div>
-          <div className="text-slate-400 font-mono text-xs">{p.parameterValue || '—'}</div>
+          <div className="text-slate-500 font-mono text-xs">{p.parameterValue || '—'}</div>
         </div>
       ))}
     </div>
@@ -143,19 +139,19 @@ function MetadataPanel({ report }: { report: Report }) {
       <div className="flex justify-end">
         <button
           onClick={handleCopyJson}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 border border-gray-200 text-sm text-slate-600 hover:text-slate-900 hover:bg-gray-200 transition-all"
         >
-          {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+          {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
           {copied ? 'Copied!' : 'Copy JSON'}
         </button>
       </div>
-      <div className="divide-y divide-white/5">
+      <div className="divide-y divide-gray-100">
         {fields.map(
           (f) =>
             f.value && (
               <div key={f.label} className="flex py-3 px-1">
                 <span className="w-40 flex-shrink-0 text-sm text-slate-500">{f.label}</span>
-                <span className="text-sm text-white break-all">{f.value}</span>
+                <span className="text-sm text-slate-900 break-all">{f.value}</span>
               </div>
             ),
         )}
@@ -173,21 +169,21 @@ export default function ReportDetailModal({ reportId, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-5xl max-h-[90vh] rounded-2xl bg-slate-900 border border-white/10 shadow-2xl flex flex-col">
+      <div className="relative w-full max-w-5xl max-h-[90vh] rounded-2xl bg-white border border-gray-200 shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
           <div className="min-w-0">
             {isLoading ? (
-              <div className="h-6 w-64 rounded bg-white/10 animate-pulse" />
+              <div className="h-6 w-64 rounded bg-gray-200 animate-pulse" />
             ) : (
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-semibold text-white truncate">
+                <h2 className="text-xl font-semibold text-slate-900 truncate">
                   {report?.reportName}
                 </h2>
-                <span className="flex-shrink-0 px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
+                <span className="flex-shrink-0 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-100 text-blue-600 text-xs font-mono">
                   #{reportId}
                 </span>
               </div>
@@ -197,15 +193,15 @@ export default function ReportDetailModal({ reportId, onClose }: Props) {
             <button
               onClick={() => download.mutate(reportId)}
               disabled={download.isPending || isLoading}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all disabled:opacity-50"
-              title="Download all report files as ZIP (report.json, roles.json, config.json, ui_settings.json)"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 border border-gray-200 text-sm text-slate-700 hover:bg-gray-200 transition-all disabled:opacity-50"
+              title="Download all report files as ZIP"
             >
               <Download className={`w-4 h-4 ${download.isPending ? 'animate-bounce' : ''}`} />
               Download ZIP
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+              className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-gray-100 transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -213,24 +209,24 @@ export default function ReportDetailModal({ reportId, onClose }: Props) {
         </div>
 
         {/* Tab bar */}
-        <div className="flex gap-1 px-6 pt-4 flex-shrink-0">
+        <div className="flex gap-1 px-6 pt-4 flex-shrink-0 border-b border-gray-100 pb-0">
           {tabItems.map((t) => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all border-b-2 -mb-px ${
                 activeTab === t.key
-                  ? 'bg-white/10 text-white'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-gray-300'
               }`}
             >
               <t.icon className="w-4 h-4" />
               {t.label}
               {t.key === 'columns' && report && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-md bg-white/10 text-xs">{report.columns.length}</span>
+                <span className="ml-1 px-1.5 py-0.5 rounded-md bg-gray-100 text-slate-600 text-xs">{report.columns.length}</span>
               )}
               {t.key === 'parameters' && report && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-md bg-white/10 text-xs">{report.parameters.length}</span>
+                <span className="ml-1 px-1.5 py-0.5 rounded-md bg-gray-100 text-slate-600 text-xs">{report.parameters.length}</span>
               )}
             </button>
           ))}
@@ -241,7 +237,7 @@ export default function ReportDetailModal({ reportId, onClose }: Props) {
           {isLoading ? (
             <Spinner />
           ) : error ? (
-            <div className="py-12 text-center text-red-400">Failed to load report details.</div>
+            <div className="py-12 text-center text-red-500">Failed to load report details.</div>
           ) : report ? (
             <>
               {activeTab === 'columns' && <ColumnsTable columns={report.columns} />}
