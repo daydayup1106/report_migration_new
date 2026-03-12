@@ -1,0 +1,61 @@
+# ───────────────────────────────────────────
+# Python / Backend
+# ───────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# Sensitive environment variables (keep .env.example)
+backend/.env
+
+# Vector store runtime data
+chromadb_data/
+backend/chromadb_data/
+
+# ───────────────────────────────────────────
+# Frontend / Node
+# ───────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ───────────────────────────────────────────
+# IDE / Editor
+# ───────────────────────────────────────────
+.idea/
+.vscode/
+*.suo
+*.user
+
+# Antigravity / Claude AI assistant config
+.claude/
+
+# ───────────────────────────────────────────
+# OS artifacts
+# ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+nul
+
+# ───────────────────────────────────────────
+# Data files (sample / test data, not source code)
+# ───────────────────────────────────────────
+prd_files/
+originalMetadata/
+test_output/
+files.zip
+
+# ───────────────────────────────────────────
+# Logs & temp
+# ───────────────────────────────────────────
+*.log
+*.tmp

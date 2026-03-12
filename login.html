@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Report Migration System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-deep: #0a0e1a;
+    --bg-card: #111827;
+    --bg-input: #1a2236;
+    --border: rgba(255,255,255,0.08);
+    --border-focus: #4f8fff;
+    --accent: #4f8fff;
+    --accent-glow: rgba(79,143,255,0.25);
+    --text-primary: #f0f4ff;
+    --text-secondary: #8899b8;
+    --text-muted: #556685;
+    --error: #ff5c5c;
+    --success: #3ddc84;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(79,143,255,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(130,80,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(79,143,255,0.03) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  /* Floating grid lines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,143,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,143,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+    animation: gridDrift 20s linear infinite;
+  }
+
+  @keyframes gridDrift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(60px, 60px); }
+  }
+
+  .login-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    padding: 20px;
+  }
+
+  /* ─── LOGO ─── */
+  .logo-area {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeSlideIn 0.6s ease-out;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-icon {
+    width: 52px;
+    height: 52px;
+    position: relative;
+  }
+
+  /* Clever logo: a document morphing into data arrows — symbolizing "migration" */
+  .logo-icon svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 12px rgba(79,143,255,0.4));
+  }
+
+  .logo-text {
+    text-align: left;
+  }
+
+  .logo-text h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  .logo-text span {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ─── CARD ─── */
+  .login-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px 32px;
+    box-shadow:
+      0 4px 24px rgba(0,0,0,0.3),
+      0 0 0 1px rgba(255,255,255,0.03) inset;
+    animation: fadeSlideIn 0.6s ease-out 0.1s both;
+  }
+
+  .card-header {
+    margin-bottom: 28px;
+  }
+
+  .card-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .card-header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* ─── TABS ─── */
+  .tabs {
+    display: flex;
+    background: var(--bg-input);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 0;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 9px;
+    transition: color 0.25s, background 0.25s;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+
+  .tab-btn.active {
+    color: var(--text-primary);
+    background: rgba(79,143,255,0.12);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  .tab-btn:hover:not(.active) {
+    color: var(--text-secondary);
+  }
+
+  .tab-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .tab-btn.active .tab-icon {
+    opacity: 1;
+  }
+
+  /* ─── FORMS ─── */
+  .form-panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .form-panel.active {
+    display: block;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  .input-wrap input {
+    width: 100%;
+    padding: 13px 16px;
+    padding-left: 44px;
+    font-size: 14.5px;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .input-wrap input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .input-wrap input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color 0.2s;
+  }
+
+  .input-wrap input:focus ~ .input-icon,
+  .input-wrap input:focus + .input-icon {
+    color: var(--accent);
+  }
+
+  .input-action {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .input-action:hover {
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* Phone input row */
+  .phone-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .country-select {
+    flex: 0 0 90px;
+    padding: 13px 10px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    text-align: center;
+  }
+
+  .country-select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .phone-row .input-wrap {
+    flex: 1;
+  }
+
+  /* Verification code row */
+  .code-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .code-row .input-wrap {
+    flex: 1;
+  }
+
+  .send-code-btn {
+    flex: 0 0 auto;
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), #6c5ce7);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .send-code-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .send-code-btn:active {
+    transform: translateY(0);
+  }
+
+  .send-code-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ─── EXTRAS ─── */
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    user-select: none;
+  }
+
+  .remember-me input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-input);
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .remember-me input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .remember-me input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4.5px;
+    top: 1.5px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .forgot-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+
+  .forgot-link:hover {
+    opacity: 0.8;
+  }
+
+  /* ─── SUBMIT ─── */
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), #6366f1);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(79,143,255,0.3);
+  }
+
+  .submit-btn:hover::before {
+    opacity: 1;
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Loading state */
+  .submit-btn.loading {
+    pointer-events: none;
+    color: transparent;
+  }
+
+  .submit-btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: spin 0.7s linear infinite;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── SOCIAL ─── */
+  .social-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .social-btn {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .social-btn:hover {
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .social-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ─── FOOTER ─── */
+  .card-footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    animation: fadeSlideIn 0.6s ease-out 0.2s both;
+  }
+
+  .card-footer a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+
+  .card-footer a:hover {
+    opacity: 0.8;
+  }
+
+  /* ─── MESSAGE ─── */
+  .message {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 18px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    animation: fadeIn 0.3s;
+  }
+
+  .message.show {
+    display: flex;
+  }
+
+  .message.error {
+    background: rgba(255,92,92,0.1);
+    border: 1px solid rgba(255,92,92,0.2);
+    color: var(--error);
+  }
+
+  .message.success {
+    background: rgba(61,220,132,0.1);
+    border: 1px solid rgba(61,220,132,0.2);
+    color: var(--success);
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 480px) {
+    .login-card { padding: 28px 20px 24px; }
+    .social-row { flex-direction: column; }
+    .phone-row { flex-direction: column; }
+    .country-select { flex: auto; }
+  }
+
+  /* Password strength */
+  .strength-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .strength-segment {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.08);
+    transition: background 0.3s;
+  }
+
+  /* Code inputs */
+  .code-digits {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .code-digit-display {
+    width: 44px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+
+  .code-digit-display.filled {
+    border-color: var(--accent);
+    background: rgba(79,143,255,0.06);
+  }
+
+  .code-digit-display.current {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  /* Hidden real input over code display */
+  .code-hidden-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-wrapper">
+  <!-- Logo -->
+  <div class="logo-area">
+    <div class="logo">
+      <div class="logo-icon">
+        <!-- Clever logo: a document with an arrow flowing through it, symbolizing migration/transformation -->
+        <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background glow -->
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="52" y2="52">
+              <stop offset="0%" stop-color="#4f8fff"/>
+              <stop offset="100%" stop-color="#6c5ce7"/>
+            </linearGradient>
+            <linearGradient id="arrowGrad" x1="10" y1="26" x2="44" y2="26">
+              <stop offset="0%" stop-color="#4f8fff"/>
+              <stop offset="100%" stop-color="#3ddc84"/>
+            </linearGradient>
+          </defs>
+          <!-- Document back page -->
+          <rect x="14" y="4" width="28" height="36" rx="4" fill="rgba(79,143,255,0.15)" stroke="rgba(79,143,255,0.3)" stroke-width="1.5"/>
+          <!-- Document front page -->
+          <rect x="8" y="10" width="28" height="36" rx="4" fill="#1a2236" stroke="url(#logoGrad)" stroke-width="1.5"/>
+          <!-- Doc lines -->
+          <line x1="14" y1="20" x2="30" y2="20" stroke="rgba(79,143,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="14" y1="26" x2="26" y2="26" stroke="rgba(79,143,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="14" y1="32" x2="28" y2="32" stroke="rgba(79,143,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Migration arrow flowing through -->
+          <path d="M6 38 L38 14" stroke="url(#arrowGrad)" stroke-width="2.5" stroke-linecap="round">
+            <animate attributeName="stroke-dasharray" values="0 60;60 60" dur="2s" repeatCount="1" fill="freeze"/>
+          </path>
+          <!-- Arrow head -->
+          <path d="M34 11 L40 13 L36 18" fill="none" stroke="#3ddc84" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <animate attributeName="opacity" values="0;1" dur="2s" repeatCount="1" fill="freeze"/>
+          </path>
+          <!-- Small sparkle -->
+          <circle cx="42" cy="10" r="2" fill="#3ddc84" opacity="0">
+            <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+            <animate attributeName="r" values="1;2.5;1" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+          </circle>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <h1>ReportFlow</h1>
+        <span>Migration System</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="login-card">
+    <div class="card-header">
+      <h2>Welcome back</h2>
+      <p>Sign in to continue to your dashboard</p>
+    </div>
+
+    <!-- Message area -->
+    <div id="message" class="message">
+      <span id="messageIcon"></span>
+      <span id="messageText"></span>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="password" onclick="switchTab('password')">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Password
+      </button>
+      <button class="tab-btn" data-tab="phone" onclick="switchTab('phone')">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Phone
+      </button>
+    </div>
+
+    <!-- Password Form -->
+    <div id="panel-password" class="form-panel active">
+      <div class="field">
+        <label>Email or Username</label>
+        <div class="input-wrap">
+          <input type="text" id="emailInput" placeholder="you@company.com" autocomplete="username">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" id="passwordInput" placeholder="Enter your password" autocomplete="current-password">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <button class="input-action" type="button" onclick="togglePassword()" aria-label="Toggle password visibility">
+            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" checked>
+          Remember me
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button class="submit-btn" id="passwordSubmit" onclick="handlePasswordLogin()">
+        Sign In
+      </button>
+    </div>
+
+    <!-- Phone Form -->
+    <div id="panel-phone" class="form-panel">
+      <div class="field">
+        <label>Phone Number</label>
+        <div class="phone-row">
+          <select class="country-select" id="countryCode">
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+86">🇨🇳 +86</option>
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+81">🇯🇵 +81</option>
+            <option value="+82">🇰🇷 +82</option>
+            <option value="+61">🇦🇺 +61</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+55">🇧🇷 +55</option>
+          </select>
+          <div class="input-wrap">
+            <input type="tel" id="phoneInput" placeholder="Phone number" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Verification Code</label>
+        <div class="code-row">
+          <div class="input-wrap">
+            <input type="text" id="codeInput" placeholder="6-digit code" maxlength="6" oninput="handleCodeInput(this)" autocomplete="one-time-code">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>
+          </div>
+          <button class="send-code-btn" id="sendCodeBtn" onclick="handleSendCode()">
+            Send Code
+          </button>
+        </div>
+        <!-- Visual code display -->
+        <div class="code-digits" id="codeDigits">
+          <div class="code-digit-display" data-idx="0"></div>
+          <div class="code-digit-display" data-idx="1"></div>
+          <div class="code-digit-display" data-idx="2"></div>
+          <div class="code-digit-display" data-idx="3"></div>
+          <div class="code-digit-display" data-idx="4"></div>
+          <div class="code-digit-display" data-idx="5"></div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="phoneSubmit" onclick="handlePhoneLogin()">
+        Verify & Sign In
+      </button>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider">or continue with</div>
+
+    <!-- Social -->
+    <div class="social-row">
+      <button class="social-btn" onclick="showMsg('info', 'Google SSO coming soon')">
+        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Google
+      </button>
+      <button class="social-btn" onclick="showMsg('info', 'GitHub SSO coming soon')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </button>
+      <button class="social-btn" onclick="showMsg('info', 'Microsoft SSO coming soon')">
+        <svg viewBox="0 0 24 24"><rect x="1" y="1" width="10" height="10" fill="#F25022"/><rect x="13" y="1" width="10" height="10" fill="#7FBA00"/><rect x="1" y="13" width="10" height="10" fill="#00A4EF"/><rect x="13" y="13" width="10" height="10" fill="#FFB900"/></svg>
+        Microsoft
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+    Don't have an account? <a href="#">Create one</a>
+  </div>
+</div>
+
+<script>
+  // ─── Tab Switching ───
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    hideMsg();
+  }
+
+  // ─── Password Toggle ───
+  let pwVisible = false;
+  function togglePassword() {
+    pwVisible = !pwVisible;
+    const input = document.getElementById('passwordInput');
+    input.type = pwVisible ? 'text' : 'password';
+    document.getElementById('eyeIcon').innerHTML = pwVisible
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  // ─── Messages ───
+  function showMsg(type, text) {
+    const el = document.getElementById('message');
+    const icon = document.getElementById('messageIcon');
+    const txt = document.getElementById('messageText');
+    el.className = 'message show ' + (type === 'info' ? 'success' : type);
+    icon.textContent = type === 'error' ? '⚠' : '✓';
+    txt.textContent = text;
+    if (type !== 'error') setTimeout(hideMsg, 4000);
+  }
+
+  function hideMsg() {
+    document.getElementById('message').className = 'message';
+  }
+
+  // ─── Password Login ───
+  function handlePasswordLogin() {
+    const email = document.getElementById('emailInput').value.trim();
+    const pw = document.getElementById('passwordInput').value;
+    if (!email) return showMsg('error', 'Please enter your email or username');
+    if (!pw) return showMsg('error', 'Please enter your password');
+
+    const btn = document.getElementById('passwordSubmit');
+    btn.classList.add('loading');
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      showMsg('info', 'Login successful! Redirecting…');
+    }, 1800);
+  }
+
+  // ─── Phone Login ───
+  let cooldown = 0;
+  let cooldownInterval = null;
+
+  function handleSendCode() {
+    const phone = document.getElementById('phoneInput').value.trim();
+    if (!phone || phone.length < 6) return showMsg('error', 'Please enter a valid phone number');
+
+    const btn = document.getElementById('sendCodeBtn');
+    cooldown = 60;
+    btn.disabled = true;
+    btn.textContent = `${cooldown}s`;
+
+    showMsg('info', 'Verification code sent!');
+
+    clearInterval(cooldownInterval);
+    cooldownInterval = setInterval(() => {
+      cooldown--;
+      btn.textContent = `${cooldown}s`;
+      if (cooldown <= 0) {
+        clearInterval(cooldownInterval);
+        btn.disabled = false;
+        btn.textContent = 'Resend';
+      }
+    }, 1000);
+  }
+
+  // ─── Code Input Visual ───
+  function handleCodeInput(input) {
+    input.value = input.value.replace(/[^0-9]/g, '');
+    const digits = input.value.split('');
+    const displays = document.querySelectorAll('.code-digit-display');
+    displays.forEach((d, i) => {
+      d.textContent = digits[i] || '';
+      d.classList.toggle('filled', !!digits[i]);
+      d.classList.toggle('current', i === digits.length && digits.length < 6);
+    });
+  }
+
+  // Focus code input when clicking digit display
+  document.getElementById('codeDigits').addEventListener('click', () => {
+    document.getElementById('codeInput').focus();
+  });
+
+  function handlePhoneLogin() {
+    const phone = document.getElementById('phoneInput').value.trim();
+    const code = document.getElementById('codeInput').value.trim();
+    if (!phone || phone.length < 6) return showMsg('error', 'Please enter a valid phone number');
+    if (!code || code.length !== 6) return showMsg('error', 'Please enter the 6-digit verification code');
+
+    const btn = document.getElementById('phoneSubmit');
+    btn.classList.add('loading');
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      showMsg('info', 'Verified! Redirecting…');
+    }, 1800);
+  }
+
+  // ─── Keyboard support ───
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const active = document.querySelector('.form-panel.active');
+      if (active.id === 'panel-password') handlePasswordLogin();
+      else handlePhoneLogin();
+    }
+  });
+
+  // Initialize code display
+  handleCodeInput(document.getElementById('codeInput'));
+</script>
+</body>
+</html>
