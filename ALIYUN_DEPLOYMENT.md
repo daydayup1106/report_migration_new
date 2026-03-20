@@ -2,10 +2,22 @@
 
 本文档提供将 `report_migration_new` 部署到阿里云服务器（基于 Docker）的详细指南。本方案不修改您现有的业务代码，只需将以下配置文件放置在项目对应的目录下即可实现高效的镜像打包和依赖复用。
 
-## 0. 拉取项目代码到服务器
-在进行部署之前，您需要先把项目代码完整拉取到阿里云服务器上。推荐在您的电脑上先把代码推送到您的私有 Github/Gitlab 仓库，然后在阿里云服务器端执行拉取：
+## 0. 基础环境安装与拉取代码
+在进行部署之前，您需要先确保服务器已经安装了运行环境，并把项目代码完整拉取。
+
+### A. 安装 Docker 与 Docker-Compose (对于 Ubuntu/Debian)
+如果您在执行 `docker-compose` 时提示 command not found，请执行以下命令一键安装：
 ```bash
-# 进入您想要存放项目的路径 (例如 /www)
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable --now docker
+```
+*(注：如果是 CentOS 服务器，请使用 `sudo yum install -y docker` 并通过下载二进制包的方式安装 docker-compose)*
+
+### B. 获取项目代码
+推荐在您的电脑上先把代码推送到您的私有 Github/Gitlab 仓库，然后在阿里云服务器端执行拉取：
+```bash
+# 进入您想要存放项目的路径 (例如 /usr/local/src)
 cd /usr/local/src
 
 # 从 Git 仓库克隆代码 (请将下面的 URL 替换为您的仓库地址)
