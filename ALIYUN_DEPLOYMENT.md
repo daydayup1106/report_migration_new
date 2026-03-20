@@ -45,9 +45,29 @@ cd report_migration_new
   - `18977` (数据库：已被**彻底从外网隔离**，仅允许后端在内网互连，切勿对外网开放)。
 
 **⚠️ B. 国内镜像源加速（核心优化）**
-在代码构建过程中，下载几十兆的前端模块和 Python 依赖经常会遇到网络阻滞。本文档提供的 `Dockerfile` 已经默认配置了国内加速源：
-- 默认 Python 使用：清华源 (`https://pypi.tuna.tsinghua.edu.cn/simple`) 
-- 默认 NPM 使用：淘宝源 (`https://registry.npmmirror.com`)
+在代码构建过程中，拉取 Docker 基础镜像以及下载前端模块、Python 依赖时，经常会遇到网络阻滞。请配置加速：
+
+1. **Docker 镜像源加速 (解决 `docker pull` 失败)**
+   在您的阿里云服务器终端运行以下命令，配置您的专属阿里云加速器及可用备用源：
+   ```bash
+   sudo mkdir -p /etc/docker
+   sudo tee /etc/docker/daemon.json <<-'EOF'
+   {
+     "registry-mirrors": [
+       "https://avp7679j.mirror.aliyuncs.com",
+       "https://docker.m.daocloud.io",
+       "https://docker.nju.edu.cn",
+       "https://mirror.baidubce.com"
+     ]
+   }
+   EOF
+   sudo systemctl daemon-reload
+   sudo systemctl restart docker
+   ```
+
+2. **代码依赖加速 (已在项目的 `Dockerfile` 中默认配置)**
+   - Python 使用：清华源 (`https://pypi.tuna.tsinghua.edu.cn/simple`) 
+   - NPM 使用：淘宝源 (`https://registry.npmmirror.com`)
 
 **⚠️ C. ChromaDB 等内存占用风险预警**
 - 初始化模型和文档向量化可能占用大量主机内存。您的阿里云服务器建议拥有至少 `2GB` RAM（推荐 `4GB+` 及以上）。
@@ -72,7 +92,7 @@ cd report_migration_new
 ### 初次启动项目（拉取并构建镜像）
 这步将会自动拉取 Python 和 Node 环境并应用上述的国内源进行**依赖下载**。在环境初试安装时，视网络情况可能需要几分钟。
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ### 停机与启动（不重建、不下载依赖）

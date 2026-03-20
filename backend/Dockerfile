@@ -3,8 +3,12 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# 更新依赖库并安装 gcc (直接使用系统源，因为容器构建时网络通常较宽带)
-RUN apt-get update && apt-get install -y --no-install-recommends gcc && \
+# 更新依赖库并安装 gcc
+# 替换为阿里云源以加速下载，并添加 --fix-missing 增强网络容错
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || true && \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list 2>/dev/null || true && \
+    apt-get update --fix-missing && \
+    apt-get install -y --fix-missing --no-install-recommends gcc && \
     rm -rf /var/lib/apt/lists/*
 
 # 第一阶段（缓存利用层）：优先复制依赖描述文件
