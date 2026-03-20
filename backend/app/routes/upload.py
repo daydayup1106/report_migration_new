@@ -1,7 +1,7 @@
 """Upload and processing endpoints."""
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse, Response
 from typing import Dict, Tuple
 from pydantic import BaseModel
 import tempfile
@@ -518,8 +518,8 @@ async def generate_example_excel(request: GenerateExampleRequest):
 
     filename = f"example_{request.reportId}.xlsx"
 
-    return StreamingResponse(
-        output,
+    return Response(
+        content=output.getvalue(),
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )

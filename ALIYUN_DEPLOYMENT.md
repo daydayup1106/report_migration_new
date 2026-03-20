@@ -73,6 +73,19 @@ cd report_migration_new
 - 初始化模型和文档向量化可能占用大量主机内存。您的阿里云服务器建议拥有至少 `2GB` RAM（推荐 `4GB+` 及以上）。
 - 若部署中断查明为 `OOM (Out Of Memory)`，请增加云端 swap 配置或升级服务器内存。
 
+**⚠️ D. 环境变量配置（非常重要）**
+由于包含敏感信息的 `.env` 文件不会被提交到 Git 仓库，在首次拉起容器前，**必须配置大模型的 API Key**：
+1. 从根目录进入后端目录，并基于模板复制一份 `.env` 文件：
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+2. 使用 `vim` 或 `nano` 编辑 `.env` 文件，将其中的 `ANTHROPIC_API_KEY` 替换为您真实的 API Key：
+   ```bash
+   nano .env
+   ```
+*(注意：务必在执行 `docker compose up` 前完成此步骤，否则 Docker 会因为找不到该文件而错误地将其创建为空文件夹，导致后端服务无限重启报错！)*
+
 ---
 
 ## 3. 核心部署配置文件
@@ -124,4 +137,5 @@ docker-compose ps
 
 # 查看报错日志 (例如后端是否因为 MongoDB 找不到报错等)
 docker-compose logs -f backend
+docker compose logs -f frontend
 ```
