@@ -21,6 +21,8 @@ services:
       # 挂载配置和ChromaDB数据持久化
       - ./backend/chromadb_data:/app/chromadb_data
       - ./backend/.env:/app/.env
+    env_file:
+      - ./backend/.env
     environment:
       - MONGODB_URL=mongodb://mongodb:18977/report_migration
     depends_on:

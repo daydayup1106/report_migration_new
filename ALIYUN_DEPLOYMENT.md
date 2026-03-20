@@ -136,6 +136,6 @@ docker-compose up -d
 docker-compose ps
 
 # 查看报错日志 (例如后端是否因为 MongoDB 找不到报错等)
-docker-compose logs -f backend
+docker compose logs -f backend
 docker compose logs -f frontend
 ```
