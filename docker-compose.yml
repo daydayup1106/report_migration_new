@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
-    image: docker.mirrors.ustc.edu.cn/library/mongo:6.0
+    image: mongo:6.0
     container_name: report_migration_mongo
     restart: always
     command: mongod --port 18977
