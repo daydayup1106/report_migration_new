@@ -23,21 +23,8 @@ FROM nginx:alpine
 # 将构建得到的静态文件分发到 Nginx 目录下
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# 提供默认配置文件（如果您的项目有定制 react-router 路由，可以用该行做基础伪静态 fallback）
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html index.htm; \
-        try_files $uri $uri/ /index.html; \
-    } \
-    location /api/ { \
-        proxy_pass http://backend:8904/; \
-        proxy_set_header Host $$host; \
-        proxy_set_header X-Real-IP $remote_addr; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# 采用独立的外部文件进行配置，彻底规避 Docker 构建系统和 Bash shell 的转义问题（比如被写入了多余的 $$ 或 \）
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
