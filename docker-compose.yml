@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: report_migration_mongo
+    restart: always
+    command: mongod --port 18977
+    volumes:
+      - mongodb_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: report_migration_backend
+    restart: always
+    volumes:
+      # 挂载业务代码以便代码修改后极速重启生效 (如果有新建文件等需求，可以视情况取消挂载直接打包)
+      - ./backend/app:/app/app
+      # 挂载配置和ChromaDB数据持久化
+      - ./backend/chromadb_data:/app/chromadb_data
+      - ./backend/.env:/app/.env
+    environment:
+      - MONGODB_URL=mongodb://mongodb:18977/report_migration
+    depends_on:
+      - mongodb
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: report_migration_frontend
+    restart: always
+    ports:
+      - "80:80"    # 默认通过 80 端口暴露前端
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:

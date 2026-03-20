@@ -31,3 +31,5 @@ passlib[bcrypt]==1.7.4
 
 packaging==23.2
 wheel<0.46
+
+slowapi==0.1.9

@@ -8,11 +8,11 @@ REM Check if MongoDB is running
 echo [1/4] Checking MongoDB...
 tasklist /FI "IMAGENAME eq mongod.exe" 2>NUL | find /I /N "mongod.exe">NUL
 if "%ERRORLEVEL%"=="0" (
-    echo âœ“ MongoDB is running
+    echo âœ?MongoDB is running
 ) else (
-    echo âœ— MongoDB is not running!
+    echo âœ?MongoDB is not running!
     echo   Please start MongoDB first:
-    echo   mongod --dbpath C:\data\db
+    echo   mongod --dbpath C:\data\db --port 18977
     echo.
     pause
     exit /b 1
@@ -21,7 +21,7 @@ if "%ERRORLEVEL%"=="0" (
 echo.
 echo [2/4] Starting Backend API...
 cd backend
-start "Backend API" cmd /k "conda activate report_migration_new && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 9000"
+start "Backend API" cmd /k "conda activate report_migration_new && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8904"
 
 echo Waiting for backend to start...
 timeout /t 5 /nobreak >nul
@@ -42,8 +42,8 @@ echo   Application Started Successfully!
 echo ====================================
 echo.
 echo Frontend: http://localhost:4000
-echo Backend:  http://localhost:9000
-echo API Docs: http://localhost:9000/api/docs
+echo Backend:  http://localhost:8904
+echo API Docs: http://localhost:8904/api/docs
 echo.
 echo Press any key to exit this window...
 echo (Keep the Backend and Frontend windows open)

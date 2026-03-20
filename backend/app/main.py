@@ -42,6 +42,10 @@ async def lifespan(app: FastAPI):
     logger.info("✅ Shutdown complete")
 
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.limiter import limiter
+
 # Create FastAPI app
 app = FastAPI(
     title="Report Migration System",
@@ -51,6 +55,10 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc"
 )
+
+# Apply rate limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS middleware
 app.add_middleware(

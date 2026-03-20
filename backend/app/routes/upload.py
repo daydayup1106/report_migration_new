@@ -1,6 +1,6 @@
 """Upload and processing endpoints."""
 
-from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from typing import Dict, Tuple
 from pydantic import BaseModel
@@ -15,6 +15,7 @@ from openpyxl.styles import Font, PatternFill, Alignment
 import random
 import io
 
+from app.limiter import limiter
 from app.services import ExcelParser, LangChainProcessor, db_service, ReportValidator
 from app.models.migration_log import MigrationLog
 from app.models.report import Report
@@ -22,6 +23,7 @@ from app.models.role import Role
 from app.models.report_config import ReportConfig
 from app.models.report_ui_settings import ReportUiSettings
 from app.config import settings
+import logging
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 logger = logging.getLogger(__name__)
@@ -47,7 +49,9 @@ class GenerateExampleRequest(BaseModel):
 
 
 @router.post("")
+@limiter.limit("5/minute")
 async def upload_excel(
+    request: Request,
     file: UploadFile = File(...),
     background_tasks: BackgroundTasks = None
 ) -> Dict:
@@ -304,7 +308,9 @@ async def confirm_upload(request: ConfirmUploadRequest) -> Dict:
 
 
 @router.post("/batch")
+@limiter.limit("3/minute")
 async def upload_batch(
+    request: Request,
     files: list[UploadFile] = File(...)
 ) -> Dict:
     """
